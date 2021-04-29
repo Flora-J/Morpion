@@ -1,21 +1,86 @@
+require 'board_case'
+require 'board'
+require 'player'
+require './view/show'
 # gére la partie
 class Game
-  #TO DO : la classe a plusieurs attr_accessor: le current_player (égal à un objet Player), le status (en cours, nul ou un objet Player s'il gagne), le Board et un array contenant les 2 joueurs.
+  attr_accessor :joueur_actuel, :status, :list_joueur, :board
 
-  def initialize
-    #TO DO : créé 2 joueurs, créé un board, met le status à "on going", défini un current_player
+def initialize
+  # création 2 joueurs, créé un board, met le status à "en cours", défini un joueur_actuel
+  @joueur_1 = Player.new
+  @joueur_2 = Player.new
+  @list_joueur = [@joueur_1,@joueur_2]
+  @status = 'en cours'
+
+  # check du type de jeton
+  if @joueur_1.joueur_symbol == @joueur_2.joueur_symbol
+    puts "Attention, j'ai changé vos jetons car ils étaient identiques"
+    if @joueur_1.joueur_symbol == 'X'
+      @joueur_2.joueur_symbol = 'O'
+    elsif @joueur_1.joueur_symbol == 'O'
+      @joueur_2.joueur_symbol = 'X'
+    end
   end
+  @joueur_1.show_state
+  @joueur_2.show_state
+  # init du damier
+  @board = Board.new
+  # affiche le damier
+  Show.new.show_board(@board)
+end
 
-  def turn
-    #TO DO : méthode faisant appelle aux méthodes des autres classes (notamment à l'instance de Board). Elle affiche le plateau, demande au joueur ce qu'il joue, vérifie si un joueur a gagné, passe au joueur suivant si la partie n'est pas finie.
+def turn
+
+  i=0
+  while @status == 'en cours' && i<9
+    @joueur_actuel = @list_joueur[i%2] 
+    @board.play_turn(@board, @joueur_actuel)
+    # cette methode permet de alterner le tour entre  joueur 
+    # affiche tableau en-cours
+    Show.new.show_board(@board)
+
+    # check gagnant 
+    if @board.victory?(@board)
+      @status = 'gagnant '
+      break
+    end
+
+    i+=1 # compte le nombre de tour 
   end
+end
 
-  def new_round
-    # TO DO : relance une partie en initialisant un nouveau board mais en gardant les mêmes joueurs.
+def new_round
+  print "Voulez-vous faire une nouvelle partie (O/N) ? "
+              
+  while choix = "O" || choix = "N" 
+    if choix == "O"
+      @board = Board.new
+      @status = "en cours"
+      puts '-' * 20
+      p "On the road again, same joueurs, shoot again"
+      p "Commençons une nouvelle partie !"
+      Show.new.show_board(@board)
+    elsif choix == 'N'
+      break
+      puts "Ok, bye"
+      exit
+    end
+
+    print "Choix erroné. Voulez-vous faire une nouvelle partie (O/N) ? "
+    choix= gets.chomp.upcase
+
+  end 
+  puts choix
+  puts @status
+end
+
+def game_end
+  if @status == 'en cours'
+    puts "Match nul"
+  elsif @status == 'gagnant '
+    puts "Bravo #{@joueur_actuel.joueur_nom}, t'as gagné"
   end
+end    
 
-  def game_end
-    # TO DO : permet l'affichage de fin de partie quand un vainqueur est détecté ou si il y a match nul
-  end    
-
-end  
+end

@@ -1,10 +1,12 @@
 # Montre les 9 cases et la position du "x" et de "o" lors du choix des joueurs
 class BoardCase
-    attr_accessor :position, :value
-
-    def initialize(position, value)
-        @position = ["A1", "A2", "A3", "B1", "B2", "B3","C1", "C2","C3"]
-        @value = ["X", "O", ""]
-    end
+	#TO DO : la classe a 2 attr_accessor, sa valeur en string (X, O, ou vide), ainsi que son identifiant de case
+	attr_accessor :symbol , :numero_de_case
+	
+	def initialize(numero_de_case,symbol )
+		# doit régler sa valeur, ainsi que son numéro de case
+		@symbol  = symbol 
+		@numero_de_case= numero_de_case
+	end
+	
 end
-
